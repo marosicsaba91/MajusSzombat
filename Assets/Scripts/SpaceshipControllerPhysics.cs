@@ -1,19 +1,20 @@
 using UnityEngine; 
 
-class SpaceshipController : MonoBehaviour
+class SpaceshipControllerPhysics : MonoBehaviour
 {
+    [SerializeField] Rigidbody2D rb;
+
     [SerializeField] float acceleration = 10;
     [SerializeField] float maxSpeed = 10;
     [SerializeField] float angularSpeedInIdle = 360;
     [SerializeField] float angularSpeedInMovement = 180;
-    [SerializeField] float drag = 0.5f;
 
     [SerializeField] float maxNitro = 2;
     [SerializeField] float nitroAccelerationMultiplier = 1.5f;
     [SerializeField] float nitroMaxSpeedMultiplier = 1.5f;
+    [SerializeField] int collisionDamage = 5;
 
     float nitro;
-    Vector3 velocity;
 
     void Start()
     {
@@ -28,19 +29,14 @@ class SpaceshipController : MonoBehaviour
 
         // Forgatás
         float angularSpeed = inputY <= 0 ? angularSpeedInIdle : angularSpeedInMovement;
-        transform.Rotate(0, 0, -inputX * angularSpeed * Time.deltaTime);
-
-        // Mozgás
-        transform.position += velocity * Time.deltaTime;
+        rb.rotation += -inputX * angularSpeed * Time.deltaTime;
 
         // Reset
         if (Input.GetKeyDown(KeyCode.X))
         {
-            Vector3 euler = transform.rotation.eulerAngles;
-            euler.z = 0;
-            transform.rotation = Quaternion.Euler(euler);
-            transform.position = Vector3.zero;
-            velocity = Vector3.zero;
+            rb.rotation = 0;
+            rb.position = Vector3.zero;
+            rb.velocity = Vector3.zero;
         }
     }
 
@@ -53,7 +49,7 @@ class SpaceshipController : MonoBehaviour
         // Gyorsulás
         if (inputY > 0)
         {
-            Vector3 direction = transform.up * inputY;
+            Vector2 direction = transform.up * inputY;
             float realAcceleration = acceleration;
             float realMaxSpeed = maxSpeed;
 
@@ -66,19 +62,18 @@ class SpaceshipController : MonoBehaviour
                 nitro = Mathf.Max(nitro, 0);
             }
 
-            velocity += direction * realAcceleration * Time.fixedDeltaTime;
-            velocity = Vector3.ClampMagnitude(velocity, realMaxSpeed);
-
+            rb.velocity += direction * realAcceleration * Time.fixedDeltaTime;
+            rb.velocity = Vector2.ClampMagnitude(rb.velocity, realMaxSpeed);
         }
         else
         {
             nitro += Time.fixedDeltaTime;
             nitro = Mathf.Min(nitro, maxNitro);
         }
-
-        // Lassítás
-        Vector3 dragVector = -velocity * drag;
-        velocity += dragVector * Time.deltaTime;
     }
 
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        GetComponent<HealthObject>().Damage(collisionDamage);
+    }
 }
