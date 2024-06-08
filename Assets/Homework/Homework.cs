@@ -12,7 +12,35 @@ class Homework : MonoBehaviour
 
 
         Debug.Log(amount);
+
+        float a1 = Abs(-45);
+        float min1 = Min(50, 10);
+        float min2 = Min(53, 10);
+        float min3 = Min(40, 10);
+        float min4 = Min(50, 16);
+
+        int n = 100;
+        LogMultTable(1,10);
+        LogMultTable(1, 8);
+        LogMultTable(-n, n);
+        Debug.Log(n);  // 100
     }
+
+    void LogMultTable(int min, int max) 
+    {
+        for (int i = min; i <= max; i++)
+        {
+            for (int j = min; j <= max; j++)
+            {
+                Debug.Log(i * j);
+            }
+        }
+        max = 0;
+    }
+
+
+
+
 
     int HowManyCanIBuy(int fullPrice, int allMoney, float discountPercent, int creditYet)
     {
