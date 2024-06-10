@@ -39,7 +39,13 @@ class Homework : MonoBehaviour
     }
 
 
-
+    float Abs(float number)
+    {
+        if (number < 0)
+            return -number;
+        else
+            return number;
+    }
 
 
     int HowManyCanIBuy(int fullPrice, int allMoney, float discountPercent, int creditYet)
